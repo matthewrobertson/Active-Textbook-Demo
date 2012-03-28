@@ -40,9 +40,8 @@
 		var scale = (this.width + delta) / this.startRect.width;
 		var width = scale * this.startRect.width;
 		var height = scale * this.startRect.height;
-		if( width /  this.startRect.width > 2) {
-			width = this.startRect.width * 2;
-			height = this.startRect.height * 2;
+		if( width /  this.startRect.width > 2 || width /  this.startRect.width < 0.2) {
+			return;
 		}
 
 		// we want to keep the transorm origin in th same place on screen
@@ -95,19 +94,28 @@
 			str +=	'translate('+vrect.getOffsetX()+'px, '+vrect.getOffsetY()+'px)'
 			return str;
 	};
+
+	var calcOffset = function(elem, parent) {
+		var offsets = {x: 0, y: 0};
+		while(elem !== parent) {
+			offsets.x += elem.offsetLeft;
+			offsets.y += elem.offsetTop;
+			elem = elem.offsetParent;
+		}
+		return offsets;
+	};
 	
 	var bindMouseWheelHandler = function($elem, vRect, startRender, stopRender, options) {
 		var timeout = null;
 		// zoom via mouse wheel events
+		var elem = $elem[0];
 		$elem.mousewheel(function(event, dt) {
 
 			event.preventDefault();
 			if( !options.shouldZoom() ) return;
 
-			
-			//var x = event.
-			vRect.zoom(event.offsetX, event.offsetY, dt*options.scaleRate);
-			//vRect.zoom(event.offsetX, event.offsetY, dt*options.scaleRate);
+			var offset = calcOffset(event.srcElement, elem);
+			vRect.zoom(event.offsetX + offset.x, event.offsetY + offset.y, dt*options.scaleRate);
 			
 			if(timeout) {
 				clearTimeout(timeout);
