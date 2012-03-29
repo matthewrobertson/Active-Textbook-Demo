@@ -40,7 +40,8 @@
 		var scale = (this.width + delta) / this.startRect.width;
 		var width = scale * this.startRect.width;
 		var height = scale * this.startRect.height;
-		if( width /  this.startRect.width > 2 || width /  this.startRect.width < 0.2) {
+		var totalScale = width /  this.startRect.width ;
+		if( totalScale > this.options.maxScale || totalScale < this.options.minScale) {
 			return;
 		}
 
@@ -59,30 +60,20 @@
 
 	VirtualRectangle.prototype.applyScale = function(originX, originY, scale, startRect) {
 
-		//alert("4");
-		
-		
 		var width = scale * startRect.width;
 		var height = scale * startRect.height;
-//alert("5");
-		if( width /  this.startRect.width > this.options.maxScale) {
-			width = this.startRect.width * this.options.maxScale;
-			height = this.startRect.height * this.options.maxScale;
+
+		var totalScale = width /  this.startRect.width ;
+		if( totalScale > this.options.maxScale || totalScale < this.options.minScale) {
+			return;
 		}
-//alert("6");
+		
 		var rightShift = (originX)/(this.startRect.width) * (width - this.width);
 		var upShift = (originY)/(this.startRect.height) * (height - this.height);
 
-		
-		// we want to keep the transorm origin in th same place on screen
-		// so we need to do a transformation to compensate
-		// var rightShift =0// 0.5 * (width - this.width);
-		// var upShift = 0//.5 * (height - this.height);
-		//alert("7");
 		this.width = width;
 		this.height = height;
 		this.scale = this.width / this.startRect.width;
-		//alert("8");
 		this.top -= upShift;
 		this.left -= rightShift;
 	};
